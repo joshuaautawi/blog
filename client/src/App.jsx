@@ -1,28 +1,23 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Route,
-  Outlet,
-} from "react-router-dom";
-import { Login } from "../pages/Login";
-import { Register } from "../pages/Register";
-import { Home } from "../pages/Home";
-import { Single } from "../pages/Single";
-import { Write } from "../pages/Write";
-import { Layout } from "../components/Layout";
-import "../style.scss";
+import { createBrowserRouter, RouterProvider, Route, Outlet } from 'react-router-dom';
+import { Login } from '../pages/Login';
+import { Register } from '../pages/Register';
+import { Home } from '../pages/Home';
+import { Single } from '../pages/Single';
+import { Write } from '../pages/Write';
+import { Layout } from '../components/Layout';
+import '../style.scss';
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <Layout />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/post/:id", element: <Single /> },
-      { path: "/write", element: <Write /> },
+      { path: '/', element: <Home /> },
+      { path: '/post/:id', element: <Single /> },
+      { path: '/write', element: <Write /> },
     ],
   },
-  { path: "/register", element: <Register /> },
-  { path: "/login", element: <Login /> },
+  { path: '/register', element: <Register /> },
+  { path: '/login', element: <Login /> },
 ]);
 
 function App() {

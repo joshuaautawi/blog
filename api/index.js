@@ -4,9 +4,11 @@ import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
+import cors from "cors";
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 const storage = multer.diskStorage({
@@ -22,6 +24,7 @@ const upload = multer({ storage });
 
 app.post("/api/upload", upload.single("file"), function (req, res) {
   const file = req.file;
+  console.log(file);
   res.status(200).json(file.filename);
 });
 

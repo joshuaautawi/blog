@@ -1,9 +1,43 @@
-import React from "react";
-import Edit from "../assets/edit.png";
-import Delete from "../assets/delete.png";
-import { Link } from "react-router-dom";
-import { Menu } from "../components/Menu";
+import React, { useContext, useState } from 'react';
+import Edit from '../assets/edit.png';
+import Delete from '../assets/delete.png';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu } from '../components/Menu';
+import { AuthContext } from '../context/authContext';
+import moment from 'moment';
+import { useEffect } from 'react';
+import axios from 'axios';
 export const Single = () => {
+  const { currentUser } = useContext(AuthContext);
+  const token = currentUser.token;
+  const [post, setPost] = useState({});
+  const location = useLocation();
+  const postId = location.pathname.split('/')[2];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8800/api/posts/${postId}`);
+        setPost(res.data);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchData();
+  }, [postId]);
+  const navigate = useNavigate();
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8800/api/posts/${post.id}`);
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getText = (html) => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent;
+  };
   return (
     <div className="single">
       <div className="content">
@@ -17,45 +51,21 @@ export const Single = () => {
             alt=""
           />
           <div className="info">
-            <span>John</span>
-            <p>Post 2 days ago</p>
+            <span>{post.username}</span>
           </div>
-          <div className="edit">
-            <Link to={"/write?edit=2"}>
-              <img src={Edit} alt="" />
-            </Link>
-            <img src={Delete} alt="" />
-          </div>
+          {currentUser?.username == post.username && (
+            <div className="edit">
+              <Link to={'/write?edit=2'} state={{ post, token }}>
+                <img src={Edit} alt="" />
+              </Link>
+              <img src={Delete} alt="" onClick={handleDelete} />
+            </div>
+          )}
         </div>
-        <h1>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Saepe, unde!
-        </h1>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad facilis
-          explicabo inventore nam voluptate repudiandae unde fugiat, expedita
-          ducimus quis sint, maxime veniam autem nisi fugit dolorum porro velit
-          exercitationem nulla consequatur totam dolores qui rerum.
-          Necessitatibus iusto hic itaque atque dolores reprehenderit suscipit
-          quia? Assumenda maxime magni quod culpa, ut blanditiis numquam
-          perspiciatis labore? Asperiores, atque. Doloribus libero est quasi
-          voluptate et. Ipsam, dolores cum iure nesciunt, ad assumenda quos
-          cupiditate sint officiis necessitatibus nostrum dicta. Iste, quasi
-          veniam. Culpa vitae placeat iste impedit quia. Similique accusamus
-          natus et quam ex laboriosam quod molestiae at quia eius dolore
-          exercitationem inventore eos voluptatem, labore id earum quos numquam
-          a ratione? Soluta, quidem sit quo veniam eligendi a animi laudantium
-          ducimus beatae voluptatum incidunt similique earum iure nulla quia
-          labore dignissimos. Itaque temporibus minus possimus consectetur nulla
-          rerum, amet suscipit? A eos facilis soluta nemo assumenda voluptas
-          cumque eum ab id omnis, nihil magni, inventore harum ea quisquam
-          reiciendis nobis eius, animi unde reprehenderit enim! Dicta commodi,
-          dignissimos libero placeat corrupti sapiente facilis repellat
-          voluptates labore necessitatibus, quae non? Nam in at error vero nihil
-          placeat quisquam, quia impedit officia veritatis est minus cumque
-          cupiditate libero! Quam maiores delectus deleniti tempore!
-        </p>
+        <h1> {post.title} </h1>
+        <p>{getText(post.desc)}</p>
       </div>
-      <Menu className="menu"></Menu>
+      <Menu category={post.cat}></Menu>
     </div>
   );
 };
